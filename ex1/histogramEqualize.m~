@@ -1,0 +1,13 @@
+function [imEq, histOrig, histEq] = histogramEqualize(imOrig)
+%UNTITLED5 Summary of this function goes here
+%   Detailed explanation goes here
+if(strcmp(imfinfo(imOrig).ColorType , 'truecolor'))
+    imOrig = transformRGB2YIQ(im2double(imOrig));
+    channel = imOrig(:, :, 1);
+else
+    channel = im2double(imOrig);
+end
+
+    
+end
+
