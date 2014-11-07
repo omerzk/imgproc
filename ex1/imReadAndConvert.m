@@ -1,6 +1,6 @@
 function im = imReadAndConvert(filename, representation)
-%UNTITLED3 Summary of this function goes here
-%   Detailed explanation goes here
+%imReadAndConvert reads the image file, and converts it's color scheme.
+%   single possible directional conversion is  rgb to grayscale.
 GRAYSCALE = 1;
 
 if(representation == GRAYSCALE)
@@ -9,10 +9,10 @@ else
     representation = 'truecolor';
 end
     
-im  = im2double(imread(filename));
 srcInf = imfinfo(filename);
 
+%if the current represantaion is not the desired one/
 if(~strcmp(srcInf.ColorType, representation))   
-    im = rgb2gray(im);
+    im = rgb2gray(im2double(imread(filename)));
 end
 
