@@ -10,9 +10,9 @@ else
 end
     
 srcInf = imfinfo(filename);
-
+im = im2double(imread(filename));
 %if the current represantaion is not the desired one/
 if(~strcmp(srcInf.ColorType, representation))   
-    im = rgb2gray(im2double(imread(filename)));
+    im = rgb2gray(im);
 end
 
