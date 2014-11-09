@@ -23,7 +23,7 @@ cumHist = cumsum(histOrig);
 %normalize the cumalative histogram
 histEq = round((cumHist * 255) / cumHist(256,1));
 %use the normalized histogram as a lookup table
-channel= im2double(histEq(channel + 1)/255);
+channel = im2double(histEq(channel + 1)/255);
 %stretch the output of the equlization to [0..1]
 channel = (channel - min(min(channel)))*(1/max(max(channel)));
 
