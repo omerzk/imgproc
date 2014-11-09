@@ -20,7 +20,7 @@ pixels_per_seg = round(cumhist(256,1)/nQuant);
 z = ones(1,nQuant + 1);
 z(nQuant + 1) = 256;
 dcumhist = double(cumhist);%is this necessary?????????======, done so there could be negative values.
-for i= 2: nQuant-1
+for i= 2: (nQuant)%idk
     dcumhist = dcumhist - pixels_per_seg;
     f = find(dcumhist((z(i-1) + 1):256) >= 0);
     z(i) = z(i-1) + f(1);
