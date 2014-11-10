@@ -14,7 +14,8 @@ else
 end
 
 %determine the initial division - z
-cumhist = cumsum(imhist(channel));
+hist = imhist(channel);
+cumhist = cumsum(hist);
 pixels_per_seg = round(cumhist(256,1)/nQuant);
 %z = find(mod(cumhist,pixels_per_seg) == 0);
 z = ones(1,nQuant + 1);
@@ -31,35 +32,36 @@ error = zeros(1, nIter);
 
 %EM
 for j=1: nIter
-    q = arrayfun(computeQ, z(1:(nQuant)), z(2: nQuant + 1));
-    z = arrayfun(computeZ, q(1:(nQuant - 1)), q(2: nQuant));
+    %size(z)
+    q = arrayfun(@computeQ, z(1:(nQuant)), z(2: nQuant + 1));
+    z(2: nQuant) = arrayfun(@computeZ, q(1:(nQuant - 1)), q(2: nQuant));
     error(j) = computeErr(z, q, nQuant);
 end
-
-lut = reshape(arrayfun(makelut, z(1: (nQuant)), z(2: (nQuant + 1) , q)),[1;[]]);
-imQuant = lut(channel);
+lut = (1:256);
+arrayfun(@makelut, z(1: (nQuant)), z(2:end) , q, 'UniformOutput', false);
+imQuant = lut(channel)/255;
 figure('name', 'imQuant image','NumberTitle', 'off');
-end
+imshow(imQuant);
 
-function locallut = makelut(zi,zi1, qi)
-    locallut = ones(zi1-zi) * qi;
+function  makelut(zi,zi1, qi)
+    lut(zi : zi1-1) = ones(1, zi1 - zi) * qi;    
 end
 
 function qi = computeQ(zi , zi1)
-    syms k l
     zVec = (zi:zi1);
     histVec = hist(zVec);
-    qi = (sum(zVec * histVec))/sum(histVec);
+    qi = round((sum(zVec * histVec))/sum(histVec));%is round needed
     %qi = symsum(hist(k) * k, k, [zi; zi1])/(symsum(hist(l), l, [zi; zi1]));
 end
 
 function zi = computeZ(qi, qi1)
-    zi = (qi+qi1)/2;
+    zi = round((qi+qi1)/2);
 end
 
 function erri = computeErr(z, q, nQuant)
-    syms p m
+    %sym p m
     erri = 1;
     %erri = symsum(symsum(((q(p) - m)^2)*hist(k),m , [z(p);z(p + 1)]), p,[1; nQuant]);    
+end
 end
 
