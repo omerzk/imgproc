@@ -29,7 +29,8 @@ end
 
 %intitialize the error array
 error = zeros(1, nIter);
-
+% initiate the lookup table
+lut = (1:256);
 %EM
 for j=1: nIter
     %size(z)
@@ -37,9 +38,13 @@ for j=1: nIter
     z(2: nQuant) = arrayfun(@computeZ, q(1:(nQuant - 1)), q(2: nQuant));
     error(j) = computeErr(z, q, nQuant);
 end
-lut = (1:256);
 arrayfun(@makelut, z(1: (nQuant)), z(2:end) , q, 'UniformOutput', false);
-imQuant = lut(channel)/255;
+imQuant = lut(channel + 1)/255;
+if truecolor
+    imYIQ(:,:,1) = imQuant;
+    imQuant = transformYIQ2RGB(imYIQ);
+end
+
 figure('name', 'imQuant image','NumberTitle', 'off');
 imshow(imQuant);
 
@@ -60,7 +65,7 @@ end
 
 function erri = computeErr(z, q, nQuant)
     %sym p m
-    erri = 1;
+    erri=1;
     %erri = symsum(symsum(((q(p) - m)^2)*hist(k),m , [z(p);z(p + 1)]), p,[1; nQuant]);    
 end
 end
