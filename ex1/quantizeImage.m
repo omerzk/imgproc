@@ -1,6 +1,8 @@
 function [imQuant, error] = quantizeImage(imOrig, nQuant, nIter)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+% quantizeImage performs optimal quantization on the imOrig 
+%   reduces the number of colors used to display imOrig to nQuant using
+%   optimal quantization, while preforming nIter optimizations of z and q.
+%   in an rgb image operates only on the Y cahnnel of the YIQ version 
 figure('name', 'Original image','NumberTitle', 'off');
 imshow(imOrig);
 
@@ -17,56 +19,69 @@ end
 hist = imhist(channel);
 cumhist = cumsum(hist);
 pixels_per_seg = round(cumhist(256,1)/nQuant);
-%z = find(mod(cumhist,pixels_per_seg) == 0);
+
+%Initiate the z vector
 z = ones(1,nQuant + 1);
 z(nQuant + 1) = 256;
-dcumhist = double(cumhist);%is this necessary?????????======, done so there could be negative values.
-for i= 2: (nQuant)%idk
-    dcumhist = dcumhist - pixels_per_seg;
-    f = find(dcumhist((z(i-1) + 1):256) >= 0);
-    z(i) = z(i-1) + f(1);
+temp = cumhist;
+for i = 2: (nQuant)
+    temp = temp - pixels_per_seg;
+    f = find(temp((z(i-1) + 1): end) >= 0);
+    z(i) = z(i - 1) + f(1);
 end
 
-%intitialize the error array
+%Intitialize the error vector
 error = zeros(1, nIter);
-% initiate the lookup table
-lut = (1:256);
+%Initiate the lookup table
+lut = (1 : 256);
+
 %EM
-for j=1: nIter
-    %size(z)
-    q = arrayfun(@computeQ, z(1:(nQuant)), z(2: nQuant + 1));
-    z(2: nQuant) = arrayfun(@computeZ, q(1:(nQuant - 1)), q(2: nQuant));
-    error(j) = computeErr(z, q, nQuant);
+for j = 1: nIter
+    q = arrayfun(@computeQ, z(1:(nQuant)), z(2: end));
+    z(2: nQuant) = arrayfun(@computeZ, q(1:(nQuant - 1)), q(2: end));
+    error(j) = sum(arrayfun(@computeErr, z(1: (nQuant)), z(2: end), q));
 end
-arrayfun(@makelut, z(1: (nQuant)), z(2:end) , q, 'UniformOutput', false);
+
+%populate the lookup table
+arrayfun(@makelut, z(1: (nQuant)), z(2: end) , q, 'UniformOutput', false);
+%quantize the image using the lut.
 imQuant = lut(channel + 1)/255;
+
 if truecolor
     imYIQ(:,:,1) = imQuant;
     imQuant = transformYIQ2RGB(imYIQ);
 end
 
-figure('name', 'imQuant image','NumberTitle', 'off');
-imshow(imQuant);
+figure('name', 'imQuant image','NumberTitle', 'off'); imshow(imQuant);
+figure('name', 'Error','NumberTitle', 'off');
+plot(error); xlabel('Iteration'); ylabel('Error'); title('Error Graph')
 
-function  makelut(zi,zi1, qi)
-    lut(zi : zi1-1) = ones(1, zi1 - zi) * qi;    
+
+function  makelut(zi, zi_1, qi)
+    %makelut computes a subvector of the lut vector
+    %and inserts it into the lut.
+    lut(zi : zi_1 - 1) = ones(1, zi_1 - zi) * qi;    
 end
 
-function qi = computeQ(zi , zi1)
-    zVec = (zi:zi1);
+function qi = computeQ(zi , zi_1)
+    %computeQ computes the qi value when given zi and zi+1
+    %using the optimal quantization taught in class.
+    zVec = (zi: zi_1);
     histVec = hist(zVec);
-    qi = round((sum(zVec * histVec))/sum(histVec));%is round needed
-    %qi = symsum(hist(k) * k, k, [zi; zi1])/(symsum(hist(l), l, [zi; zi1]));
+    qi = round((sum(zVec * histVec))/sum(histVec));
 end
 
-function zi = computeZ(qi, qi1)
-    zi = round((qi+qi1)/2);
+function zi = computeZ(qi, qi_1)
+    %computeQ computes the zi value when given qi and qi+1
+    %using the optimal quantization taught in class.
+    zi = round((qi+qi_1)/2);
 end
 
-function erri = computeErr(z, q, nQuant)
-    %sym p m
-    erri=1;
-    %erri = symsum(symsum(((q(p) - m)^2)*hist(k),m , [z(p);z(p + 1)]), p,[1; nQuant]);    
+function erri = computeErr(zi, zi_1, qi)
+    %computeErr computes a section's error value when given zi, zi+1 and qi.
+    %using the optimal quantization taught in class.
+    zVec = (zi: zi_1);
+    erri = sum(((qi - zVec).^2).* hist(zVec)');
 end
 end
 
