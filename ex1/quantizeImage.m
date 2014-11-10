@@ -3,6 +3,20 @@ function [imQuant, error] = quantizeImage(imOrig, nQuant, nIter)
 %   reduces the number of colors used to display imOrig to nQuant using
 %   optimal quantization, while preforming nIter optimizations of z and q.
 %   in an rgb image operates only on the Y cahnnel of the YIQ version 
+
+%Input checks
+if(nQuant <= 0 || nIter <= 0)
+    display('nQuant and nIter must be positive integers');
+    imQuant = imOrig;
+    error = 0;
+    return 
+end
+
+if(~isfloat(imOrig))
+    imOrig = im2double(imOrig);
+end
+%===========================================================
+
 figure('name', 'Original image','NumberTitle', 'off');
 imshow(imOrig);
 

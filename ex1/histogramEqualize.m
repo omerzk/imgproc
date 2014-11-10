@@ -6,6 +6,10 @@ function [imEq, histOrig, histEq] = histogramEqualize(imOrig)
 %   histogram and the equalized histogram.
 
 figure('name', 'Original image', 'NumberTitle', 'off'); imshow(imOrig);
+%Input check
+if(~isfloat(imOrig))
+    imOrig = im2double(imOrig);
+end
 
 %if the image is in RGB
 if(ndims(imOrig) == 3)
