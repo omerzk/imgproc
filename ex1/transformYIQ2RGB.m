@@ -5,7 +5,7 @@ function imRGB = transformYIQ2RGB(imYIQ)
 %  B = Y - 1.108 * I + 1.705 * Q;
 
 %Input checks
-if(~isfloat(imRGB))
+if(~isfloat(imYIQ))
     imYIQ = im2double(imYIQ);
 end
 

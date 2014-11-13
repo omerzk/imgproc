@@ -1,6 +1,7 @@
 function imDisplay(filename, representation)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
+%imDisplay 
+%   displays an image and info on the intensity of the pixel when the mouse
+%   hovers over it
 impixelinfo(imshow(imReadAndConvert(filename, representation)));
 
 end
