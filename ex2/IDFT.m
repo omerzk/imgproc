@@ -7,5 +7,5 @@ function signal = IDFT(fourierSignal)
     %e vector
     e = exp((2 * 1i * pi)/N);
     mat = e .^ u; % DFT matrix
-    signal = real((mat' * fourierSignal')'/N);
+    signal = (mat' * fourierSignal')'/N;
 end
