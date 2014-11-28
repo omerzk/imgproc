@@ -7,12 +7,18 @@ function blurImage = blurInFourierSpace(inImage,kernelSize)
     %create the gaussian matrix
     gaussian = d1' * d1;
     gaussian = gaussian./sum(sum(gaussian));
-    ft = DFT2(inImage);
     [N, M] = size(inImage);
     gaussain_ft = zeros(N, M);
-    Mstart = floor(M/2) + 1;
-    Nstart = floor(N/2) + 1;
-    gaussain_ft(Mstart : Mstart + kernelSize-1 , Nstart : Nstart + kernelSize-1) = DFT2(gaussian);
-    blurImage = IDFT2((ifftshift(gaussain_ft).*ft));
+    %insert the gaussian intothe center of a zero matrix  
+    Mstart = floor(M / 2) + 1;
+    Nstart = floor(N / 2) + 1;
+    leg = floor(kernelSize / 2);
+    gaussain_ft(Mstart - leg :Mstart + leg, Nstart - leg:Nstart + leg )= gaussian;
+    %fourier transform of each of the operands
+    ftIm = DFT2(inImage);
+    gaussain_ft = DFT2(gaussain_ft);
+    
+    blurImage = ifftshift(IDFT2((gaussain_ft .* ftIm)));
+    
     
 end

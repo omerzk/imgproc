@@ -1,6 +1,5 @@
 function fourierSignal = DFT(signal)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes her
+%DFT returns the discrete fourier transform of the input signal
     N = length(signal);
     %x vector
     n = (0 : N-1); 
