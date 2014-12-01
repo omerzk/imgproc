@@ -8,6 +8,6 @@ function blurImage = blurInImageSpace(inImage,kernelSize)
     gaussian = d1' * d1;
     gaussian = gaussian./sum(sum(gaussian));
     %blur
-    blurImage = conv2(inImage,gaussian);
-    
+    blurImage = conv2(inImage,gaussian,'same');
+    figure('name', 'Conv blur Image','NumberTitle', 'off'); imshow(blurImage);
 end

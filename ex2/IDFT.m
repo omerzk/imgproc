@@ -1,6 +1,7 @@
 function signal = IDFT(fourierSignal)
 %IDFT returns the inverse discrete fourier transform of the input signal
-    N = length(fourierSignal);
+    s = size(fourierSignal);
+    N = s(2);
     %x vector
     n = (0 : N-1); 
     % u matrix;

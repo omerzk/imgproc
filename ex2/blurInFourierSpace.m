@@ -19,6 +19,7 @@ function blurImage = blurInFourierSpace(inImage,kernelSize)
     gaussain_ft = DFT2(gaussain_ft);
     
     blurImage = ifftshift(IDFT2((gaussain_ft .* ftIm)));
+    figure('name', 'Fourier blur Image','NumberTitle', 'off'); imshow(blurImage);
     
     
 end
