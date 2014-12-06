@@ -6,13 +6,13 @@ function img = LaplacianToImage(lpyr, filter, coeffMultVec)
     %shifted(1,end+1) = {zeros(length(coLpyr{end})/2)};
     %cells = cellfun(@(x,y){x + expand(y)} , coLpyr, shifted)
     for i=length(coLpyr):-1:2
-         coLpyr{i - 1} = expand(coLpyr{i}) + coLpyr{i - 1};
+         coLpyr{i - 1} = expand(coLpyr{i}, filter) + coLpyr{i - 1};
     end
     img = coLpyr{1};
     
-    function  expansion = expand(level)
-        padding = zeros(size(level) * 2);
-        padding(1:2:end,1:2:end) = level;
-        expansion = conv2(conv2(padding, filter, 'same'),filter','same');
-    end
+%     function  expansion = expand(level, filter)
+%         padding = zeros(size(level) * 2);
+%         padding(1:2:end,1:2:end) = level;
+%         expansion = conv2(conv2(padding, filter, 'same'),filter','same');
+%     end
 end
