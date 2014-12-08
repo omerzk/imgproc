@@ -2,7 +2,10 @@ function [pyr, filter] = LaplacianPyramid(im, maxLevels, filterSize)
     [Gpyr, reductionFilter] = GaussianPyramid(im, maxLevels, filterSize);
     filter = reductionFilter * 2;
     shifted = Gpyr(2 : end);
-    shifted(1,end+1) = {zeros(length(Gpyr{end})/2)};
+    if(size(Gpyr{end}) == [1 1])
+        imshow(Gpyr{1});
+    end
+    shifted(1,end+1) = {zeros(length(Gpyr{end})/2)};%previously divided length by 2;
     pyr = cellfun(@(x,y){x - expand(y, filter)}, Gpyr, shifted);
     
 %     function  expansion = expand(level)
