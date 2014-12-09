@@ -3,3 +3,4 @@ function  expansion = expand(level, filter)
     padding(1:2:end,1:2:end) = level;
     expansion = conv2(conv2(padding, filter, 'same'),filter','same');
 end
+%is it allowed to use additional functions?
