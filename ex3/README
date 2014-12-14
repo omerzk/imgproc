@@ -1,0 +1,92 @@
+omerzaks
+
+========================
+R2014a linux mint
+========================
+
+========================
+Exercise Description
+========================
+in this exercise we wrote  functions that:
+- produce the laplacian pyramid and the gaussian pyramid of an image.
+- render and display a pyramid.
+- reproduce an image from it's laplacian pyramid
+- blend two images using a mask and laplacian blending
+
+========================
+Questions
+========================
+
+ - Diffrent sizes of imageFilters - as the filter size grows larger the resulting image seems to be sharper and sharper
+   this might stem from the fact that when we construct the laplacian pyramid from the guassian one
+   we substract the levels from one another and it would be resonable that if we use a larger 
+   filter(a harsher low pass filter) less high frequancies would be present in subsequant levels 
+   and as a result in the substraction less high frequancies would be substracted.
+   so when we add the levels up to recover the image we should get some emplification of the
+   higher frequancies as compared to the lower filter size operations
+                                    
+
+- different maxLevels - The images seem to be more smoothly blended as the maxlevels goes higher
+  (of course up to the maximum possible level)
+  it would seem resonable since in every level of the laplacian 
+  we use the mask to perform the weighted blending of the two levels
+  and the the filter used is more prominent at each level 
+  the repeated blurring of the mask should result in  it's weighing of the images 
+  to be more and more blended .
+
+
+========================
+Files Submitted
+========================
+GaussianPyramid.m -  contains the GaussianPyramid function
+LaplacianPyramid.m - contains the LaplacianPyramid function
+expand.m -           contains the expand function
+renderPyramid.m -    contains the renderPyramid function
+displayPyramid.m -   contains the displayPyramid function.
+LaplacianToImage.m - contains the LaplacianToImage function.
+pyramidBlending.m -  contains the pyramidBlending function.
+rgbBlend.m -         contains the rgbBlend function.
+blendingExample1.m - contains the blendingExample1 function.
+blendingExample2.m - contains the blendingExample2 function.
+README - this file
+
+Example files:
+cartb.jpg
+astro.jpg
+mask.jpg
+tiger.1.jpg
+bun.jpg
+mask.3.3.2.2.jpg
+
+
+
+========================
+Functions
+========================
+GaussianPyramid - GaussianPyramid produces the gaussian pyramid of the given image 
+                  under the maxlevels constraint and using afilter of the required size
+
+LaplacianPyramid - LaplacianPyramid produces the Laplacian pyramid of the given image 
+                   under the maxlevels constraint and using afilter of the required size
+
+expand - returns the input level of a pyramid after expansion 
+                     
+renderPyramid - renderPyramid renders the required levels  input pyramid in a single
+                image 
+                      
+displayPyramid    - displayPyramid display a rendering of #levels of pyr.
+                     
+LaplacianToImage  - produces the original image~ when provided with it's laplacian pyramid
+                    and the gausssian filter used in constructing the pyramid could be used
+                    to add filtering by manipulating the coefficient vector
+
+pyramidBlending   - pyramidBlending Blends two images using pyramid belnding
+                    the belnding is performed using laplacian pyramid blending with a mask
+                    that weights every pixel in the photos to indicate how much to
+                     combine from either photo in that pixel.
+                     
+                 
+rgbBlend  - rgbBlend blends two rgb images using the pyramidblend function
+                   
+
+      
