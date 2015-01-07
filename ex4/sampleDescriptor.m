@@ -19,7 +19,7 @@ desc = zeros(k, k, len);
 pos = (pos - 1)*(2^(-2)) + 1;
 %fabricate the origin coordinates
 sz = size(im);
-[Y, X] = meshgrid(1:sz(2), 1:sz(1));
+[Y, X] = meshgrid(1:sz(1), 1:sz(2));
 
 for l = 1: len
     x = pos(l, 1);
@@ -44,7 +44,6 @@ for l = 1: len
             patch(m, r) = interp2(Y, X, im, rotInd(2), rotInd(1));
         end
     end
-    %normalize
-    desc(:, :, l) = (patch - mean(patch(:)))/norm(patch - mean(patch(:)));
+    desc(:, :, l) = patch;
 end
 
