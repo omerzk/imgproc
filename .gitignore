@@ -1,10 +1,6 @@
 
 *.m~
 
-*.m~
-
-ex1/transformRGB2YIQ.m~
-
 ex3/palindrome.py
 
 ex3/m.jpg
@@ -12,3 +8,15 @@ ex3/m.jpg
 ex3/lena.bmp
 
 ex3/a.jpg
+
+*.pdf
+
+*.txt
+
+*.jpg
+
+*.docx
+
+ex3/README
+
+ex3/README
