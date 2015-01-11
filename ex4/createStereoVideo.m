@@ -17,23 +17,28 @@ images = loadImages(imgDirectory);
 [prevPyr, ~] = GaussianPyramid(images(:,:,:,1),15,5);
 [prevPos, prevDesc] = findFeatures(prevPyr, 800);
 T = zeros(1, size(images, 3) - 1);
-
+maxY = 0;maxX = 0;
 for z = 2:size(images, 3)
     [curPyr, ~] = GaussianPyramid(images(:,:,:,z),15,5);
     [curPos, curDesc] = findFeatures(curPyr, 800);
     [prevInd, curInd] = myMatchFeatures(prevDesc, curDesc, 0.7);
     [H , ~] = ransacTransForm(prevPos(prevInd, :), curPos(curInd, :), 500, 0.2);
+    maxX = max(maxX, H(1, 3)); maxY = max(maxY,H(2, 3));
     T{z} = H;
 end
 %2. :)
 panT = imgToPanoramaCoordinates(T);
 
 %3.:TODO
+    panoSize = size(images(:,:,1)) + [maxX maxY];%?????????????????????????????
 
+for k = 1:nViews
 %4.:REVISE
-[panoramaFrame,frameNotOK] = renderPanoramicFrame(panoSize,images,panT,imgSliceCenterX,halfSliceWidthX);
+[panoramaFrame,frameNotOK] = renderPanoramicFrame(panoSize, images, panT, imgSliceCenterX, halfSliceWidthX);
 %5.:REVISE
 if ~frameNotOK
     stereoVid(k) = panoramaFrame;
+end
+end
 
 end

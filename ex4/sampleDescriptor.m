@@ -27,10 +27,10 @@ for l = 1: len
     %make an index matrix which represents a window around the target pixel
     [pY, pX] = meshgrid(1: k, 1: k);
     indexVec = [pX(:) pY(:)]' - 4;
-    dirpatch = conv2(interp2(Y, X, dir, pY + y, pX + x), G, 'same');
+    dirpatch = conv2(interp2(Y, X, dir, pY -4 + y, pX -4 + x), G, 'same');
     lclOrient = dirpatch(4, 4);
     %Fabricate the opposite rotation matrix as to normalize the orientation to 0; 
-    cosTheta = cos(-lclOrient); sinTheta = sin(-lclOrient);
+    cosTheta = cos(lclOrient); sinTheta = sin(lclOrient);
     rotMat = [cosTheta -sinTheta; sinTheta cosTheta];
     if isnan(rotMat(1))%DEBUGGING only
         [lclOrient x y]
@@ -39,10 +39,10 @@ for l = 1: len
     rotIndices = reshape(rotMat * indexVec,7,7,2);%r
     
     %with rotation
-    %patch = interp2(Y, X, im, rotIndices(:,:,2) + y, rotIndices(:,:,1) + x,'cubic');
+    patch = interp2(Y, X, im, rotIndices(:,:,2) + y, rotIndices(:,:,1) + x,'cubic');
     %imshow(patch);
     %without rotation for DEBUGGING.
-    patch = interp2(Y, X, im, pY+y, pX+x,'cubic');
+    %patch = interp2(Y, X, im, pY+y, pX+x,'cubic');
     desc(:, :, l) = (patch - mean(patch(:)))/norm(patch - mean(patch(:)));
 end
 end
