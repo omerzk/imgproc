@@ -27,32 +27,20 @@ for l = 1: len
     %make an index matrix which represents a window around the target pixel
     [pY, pX] = meshgrid(1: k, 1: k);
     indexVec = [pX(:) pY(:)]' - 4;
-    dirpatch = conv2(interp2(Y, X, dir, pY + y, pX + x), G, 'same');%consider changing to dominant/blurred gradient
-    curDir = dirpatch(4, 4);
-    cosTheta = cos(curDir); sinTheta = sin(curDir);
+    dirpatch = conv2(interp2(Y, X, dir, pY + y, pX + x), G, 'same');
+    lclOrient = dirpatch(4, 4);
+    %Fabricate the opposite rotation matrix as to normalize the orientation to 0; 
+    cosTheta = cos(-lclOrient); sinTheta = sin(-lclOrient);
     rotMat = [cosTheta -sinTheta; sinTheta cosTheta];
     if isnan(rotMat(1))%DEBUGGING only
-        [curDir x y]
+        [lclOrient x y]
         size(dir)
     end
-    rotIndices = reshape(rotMat \ indexVec,7,7,2);
+    rotIndices = reshape(rotMat * indexVec,7,7,2);%r
     
-
-% REMOVE after implementing rotation.====================================
-% %     rotX = zeros(k,k);rotY = zeros(k,k);
-% %     for m = 1:7
-% %         for r = 1:7
-% %             %backward warping...
-% %             %FIND THE X',Y' after rotation.
-% %             %:TODO inv/reg?
-% %             rotInd = rotMat \ [patchInd(m, r, 1); patchInd(m, r, 2)];
-% %             rotX(m, r) =  rotInd(1) + x;
-% %             rotY(m, r) =  rotInd(2) + y;
-% %         end
-% %     end
-%=========================================================================
     %with rotation
     %patch = interp2(Y, X, im, rotIndices(:,:,2) + y, rotIndices(:,:,1) + x,'cubic');
+    %imshow(patch);
     %without rotation for DEBUGGING.
     patch = interp2(Y, X, im, pY+y, pX+x,'cubic');
     desc(:, :, l) = (patch - mean(patch(:)))/norm(patch - mean(patch(:)));

@@ -39,7 +39,10 @@ for i = 1:size(imgs,1)
        break;
    end
    imsz = size(imgs(:, :, i));
+   %Create the domain grids.
    [imY, imX] = meshgrid(1:imsz(2), 1:imsz(1));
+   %interpolate to find the value of the im in the subpixels we found
+   %thus completing our backwarping.
    panoramaFrame(left:right,1:panoSize(1)) = interp2(imY,imX,...
        imgs(:,:, i),invIndices(:, :, 1), invIndices(:, :, 2));
 end

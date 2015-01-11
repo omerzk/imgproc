@@ -11,7 +11,7 @@ maxCorners = maxNum;
 found = 0; i = 1;
 pos = zeros(maxCorners, 2);
 desc = zeros(7, 7, maxCorners);
-brdrSpc = 35;
+brdrSpc = 32;
 %change i<= 1 for single level mops DEBUGGING, size(pyr,2) - 2 for multi level
 while (found < maxCorners) && (i <= size(pyr,2) - 2)
     %find the level's corner
@@ -36,10 +36,10 @@ pos = pos(1 : found, :);
 desc = desc(:, :, 1 : found);
 
 
-% imshow(pyr{1})
-% hold on;
-% plot(pos(:,2),pos(:,1),'r.','MarkerSize',10)
-% hold off;
+imshow(pyr{1})
+hold on;
+plot(pos(:,2),pos(:,1),'r.','MarkerSize',10)
+hold off;
 end
 
     

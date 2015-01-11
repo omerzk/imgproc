@@ -10,6 +10,8 @@ function Tout = imgToPanoramaCoordinates(Tin)
 Tout = cell(size(Tin));
 Tout{1} = eye(3);
 for k = 1:size(Tin, 2)
-    Tout{k + 1} = Tout{k} * Tin{k};
+    Tout{k + 1} = Tout{k} / (Tin{k});
+    % Inverse so that the final transformations are from m to 0
+    % TODO:Consider making Tin s.t Ti+1 is Imi+1 to Imi(fit their def better)
 end
 end
