@@ -30,7 +30,7 @@ s = 4;
 [npts,~] = size(pos1);
 indices = (1:npts);
 best_inliers = 0;
-inliersThreshold = min(10,npts-1);
+inliersThreshold = min(10, npts - 1);
 T = nan;
 inliers = nan;
 for k = 1:numIters
@@ -46,15 +46,15 @@ for k = 1:numIters
     res = (homRes(:,1:2) ./ repmat(homRes(:,3),[1,2]));
     %Check for inliers
     %inliers =  # (?((x1 - x2)? + (y1 - y2)?) > inlierTol)
-    inlierCheck = (sqrt(sum((res - pos2).^2, 2)) < inlierTol)';
+    inlierCheck = (sqrt(sum((res - pos2).^2, 2)) < inlierTol)';%withdrew the sqrt at some point 
     if sum(inlierCheck) > max(best_inliers, inliersThreshold)
         best_inliers = sum(inlierCheck);
         inliers = indices(inlierCheck);
       %DEBUG
-        disp('=============================================');
-        disp(H_);
-        best_inliers
-        disp('=============================================');
+%         disp('=============================================');
+%         disp(H_);
+%         best_inliers
+%         disp('=============================================');
         %UNKNOWN:why not save T = _H here ?...
         % T = H_;
   else

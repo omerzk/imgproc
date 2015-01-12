@@ -14,39 +14,38 @@ function [panoramaFrame,frameNotOK]=renderPanoramicFrame(panoSize,imgs,T,imgSlic
 % Returns:
 % panoramaFrame? the rendered frame
 % frameNotOK ? in case of errors in rednering the frame, it is true.
-try
 frameNotOK = false;
 panoramaFrame = zeros(panoSize);
 %transfer coordinates to the panorama coordinate system
-Tcenters = T .* [imgSliceCenterX;...
-    ones(size(imgSliceCenterX)) * size(imgs,1)/2];
+homCenter = [imgSliceCenterX(:,1)'; size(imgs, 1)/2; ones(1,size(imgSliceCenterX,1))];
+Tcenters = zeros(size(imgSliceCenterX,1),1);
+for w = 1:size(T, 2)
+    %same center since it's a constant vec.
+    tHomCenter = T{w} * homCenter;
+    Tcenters(w,:) = (tHomCenter(1)/tHomCenter(3))';
+end
 %initiallize a vector of bounderies between the slices from each photo.
-bounds = zeros(1, size(imgSliceCenterX, 2) + 1);
-bounds(1) = Tcenters(1) - halfSliceWidthX;
-bounds(2: end - 1) = (Tcenters(1:end - 1) + Tcenters(2 : end))/2;
-bounds(end) = Tcenters(end) + halfSliceWidthX;
-bounds = bounds - min(bounds);%??????????????????????????????????????????????????????????????????
+bounds = zeros(1,size(imgSliceCenterX, 2) + 1);
+bounds(1) = Tcenters(1,1) - halfSliceWidthX;
+bounds(1,2: end - 1) = (Tcenters(1,1: end - 1, 1) + Tcenters(1,2 : end))/2;
+bounds(end) = Tcenters(end,1) + halfSliceWidthX;
+bounds = bounds - min(bounds) + 1;%????????????????????????????????????????
 %==============================================
 for i = 1:size(imgs,1)
    left = bounds(i); right = bounds(i + 1);%readability counts
    [Y, X] = meshgrid(left : right,1 : panoSize(2));
    H = T(i);
    indexVec = [X(:) Y(:)]';
-   %Apply tansformation inv(H) * [x1...xn;y1...yn](2xn)
-   invIndices = reshape(H \ indexVec, [size(X) 2]);
-   if isnan(invIndices(1,1,1))
-       frameNotOK = true;
-       break;
-   end
-   imsz = size(imgs(:, :, i));
+   %Apply tansformation (H) * [x1...xn;y1...yn](2xn)
+   invIndices = reshape(H * indexVec, [size(X) 2]);
    %Create the domain grids.
+   imsz = size(imgs(:, :, :, i));
    [imY, imX] = meshgrid(1:imsz(2), 1:imsz(1));
    %interpolate to find the value of the im in the subpixels we found
    %thus completing our backwarping.
    panoramaFrame(left:right,1:panoSize(1)) = interp2(imY,imX,...
        imgs(:,:, i),invIndices(:, :, 2), invIndices(:, :, 1));
 end
-catch excpt
+if sum(isnan(panoramaFrame)) > 0
     frameNotOK = true;
-    disp(excpt);
 end

@@ -11,7 +11,7 @@ function imgs = loadImages(directoryPath)
 filels = dir(directoryPath);
 imls = filels(cell2mat(cellfun(@(x){strcmp(x,'..') == strcmp(x,'.')}, {filels(:).name}))); 
 info = imfinfo(strcat(directoryPath, '/', imls(1).name));
-imgs = zeros(info.Width , info.Height, info.BitDepth / 8, length(imls));
+imgs = zeros(info.Height , info.Width, info.BitDepth / 8, length(imls));
 for i = 1 : length(imls)
     im = imls(i);
     imgs(:,:,:,i) = im2double(imread(strcat(directoryPath, '/', im.name)));
