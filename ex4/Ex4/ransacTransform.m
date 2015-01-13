@@ -55,7 +55,10 @@ for k = 1:numIters
 %         disp(H_);
 %         best_inliers
 %         disp('=============================================');
-
+        %UNKNOWN:why not save T = _H here ?...
+        % T = H_;
+  else
+     H_;
     end
 end
 if isnan(inliers)

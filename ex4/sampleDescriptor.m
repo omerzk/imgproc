@@ -21,13 +21,15 @@ pos = ((pos - 1) * 0.25) + 1;
 %ataining the grad direction at every point of the image.
 [~, dir] = imgradient(im , 'sobel');%soble is the default method
 
+%make an index matrix which represents a window around the target pixel
+[pY, pX] = meshgrid(-descRad: descRad, -descRad: descRad);
+
 for l = 1: len
-    x = pos(l, 1);
-    y = pos(l, 2);
-    %make an index matrix which represents a window around the target pixel
-    [pY, pX] = meshgrid(-descRad: descRad, -descRad: descRad);
+     x = pos(l, 1);
+     y = pos(l, 2);
+
     indexVec = [pX(:) pY(:)]';
-    dirpatch = conv2(interp2(Y, X, dir, pY + y, pX  + x), G, 'same');
+    dirpatch = conv2(interp2(Y, X, dir,  pX  + x,pY + y), G, 'same');
     lclOrient = dirpatch(4, 4);
     %Fabricate the opposite rotation matrix as to normalize the orientation to 0; 
     cosTheta = cos(lclOrient); sinTheta = sin(lclOrient);
@@ -39,10 +41,10 @@ for l = 1: len
     rotIndices = reshape(rotMat * indexVec,7,7,2);%r
     
     %with rotation
-    %patch = interp2(Y, X, im, rotIndices(:,:,2) + y, rotIndices(:,:,1) + x,'cubic');
+    patch = interp2(Y, X, im, rotIndices(:,:,2) + y, rotIndices(:,:,1) + x,'cubic');
     %imshow(patch);
     %without rotation for DEBUGGING.
-    patch = interp2(Y, X, im, pY + y, pX + x,'cubic');
+    %patch = interp2(Y, X, im, pY + y, pX + x,'cubic');
     desc(:, :, l) = (patch - mean(patch(:)))/norm(patch - mean(patch(:)));
 end
 end
