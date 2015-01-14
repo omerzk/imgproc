@@ -44,6 +44,10 @@ for i = 1:size(imgs,4)
    clearvars prod indexVec
    %interpolate to find the value of the im in the subpixels we found
    %thus completing our backwarping.
+   if sum(invIndices(:,:,1) < 0) > 0
+       frameNotOK = true; 
+       break;
+   end
    panoramaFrame(1:panoSize(1),left:right,1) = interp2(imgs(:,:,1, i),invIndices(:, :, 2), invIndices(:, :, 1),'bilinear');
    panoramaFrame(1:panoSize(1),left:right,2) = interp2(imgs(:,:,2, i),invIndices(:, :, 2), invIndices(:, :, 1),'bilinear');
    panoramaFrame(1:panoSize(1),left:right,3) = interp2(imgs(:,:,3, i),invIndices(:, :, 2), invIndices(:, :, 1),'bilinear');

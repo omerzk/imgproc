@@ -33,6 +33,8 @@ best_inliers = 0;
 inliersThreshold = min(10, npts - 1);
 T = nan;
 inliers = nan;
+size(NormalizePoints(pos1))
+pos2 = NormalizePoints(pos2);
 for k = 1:numIters
     %Draw random points
     sampleInd = randsample(npts, s);

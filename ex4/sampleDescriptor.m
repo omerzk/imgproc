@@ -41,10 +41,10 @@ for l = 1: len
     rotIndices = reshape(rotMat * indexVec,7,7,2);%r
     
     %with rotation
-    patch = interp2(Y, X, im, rotIndices(:,:,2) + y, rotIndices(:,:,1) + x,'cubic');
+    %patch = interp2(Y, X, im, rotIndices(:,:,2) + y, rotIndices(:,:,1) + x,'cubic');
     %imshow(patch);
     %without rotation for DEBUGGING.
-    %patch = interp2(Y, X, im, pY + y, pX + x,'cubic');
+    patch = interp2(Y, X, im, pY + y, pX + x,'cubic');
     desc(:, :, l) = (patch - mean(patch(:)))/norm(patch - mean(patch(:)));
 end
 end

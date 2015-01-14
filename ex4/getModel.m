@@ -27,9 +27,9 @@ A = [xSource ySource oneVec zeroVec zeroVec zeroVec xSourcexTarget ySourcexTarge
 %Build RHS vector
 b = [xTarget; yTarget];
 
-%Solve for homography
+%Solve for homography using least square.
 Hvec = A \ b;
-Hvec(7:8) = 0;
+
 Hvec(9) = 1; %Add in the redundent entry.
 H = reshape(Hvec, 3, 3)';
 %  u = mean(xTarget - xSource);

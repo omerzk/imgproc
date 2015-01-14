@@ -13,7 +13,7 @@ pos = zeros(maxCorners, 2);
 desc = zeros(7, 7, maxCorners);
 brdrSpc = 32;
 %change i<= 1 for single level mops DEBUGGING, size(pyr,2) - 2 for multi level
-while (found < maxCorners) && (i <= size(pyr,2) - 2)
+while (found < maxCorners) && (i <= 1)
     %find the level's corner
     [szX, szY] = size(pyr{i});
     %trim edges so that no unsamplable intrest points are found.
