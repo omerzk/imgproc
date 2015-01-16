@@ -12,42 +12,43 @@ function [stereoVid] = createStereoVideo(imgDirectory, nViews) %
 % nView ? The number of views to extract from each image 
 % Returns:
 % stereoVid ? a movie which includes all the panoramic views 
-images = loadImages(imgDirectory);
+
+unfilteredImages = loadImages(imgDirectory);
 %1.
-T = cell(1, size(images, 3) - 1);
-maxY = 0;maxX = 0;
-prevImages = images(:,:,:,1:end-1);
-curImages = images(:,:,:,2:end);
-parfor z = 2:(size(images, 4))
-    [prevPyr, ~] = GaussianPyramid(rgb2gray(prevImages(:,:,:,z-1)),15,5);
-    [curPyr, ~] = GaussianPyramid(rgb2gray(curImages(:,:,:,z-1)),15,5);
-    
-    [curPos, curDesc] = findFeatures(curPyr, 800);
-    [prevPos, prevDesc] = findFeatures(prevPyr, 800);
-    
-    [prevInd, curInd] = myMatchFeatures(prevDesc, curDesc, 0.7);
-    
-    [H , ~] = ransacTransform(prevPos(prevInd, :), curPos(curInd, :), 700, 30);
-    T{z-1} = H;
+T = register(unfilteredImages);
+maxY = 0; maxX = 0;
+%2.
+unfilteredPanT = imgToPanoramaCoordinates(T);
+%filter negative movements
+images = zeros(size(unfilteredImages));
+panT = cell(size(unfilteredPanT));
+prev = zeros(3, 3);
+valid = 1;
+for l=1:size(unfilteredPanT,2)
+    cur = unfilteredPanT{l};
+    if prev(2, 3) <= cur(2, 3)
+        images(:,:,:, valid) = unfilteredImages(:,:,:,l);
+        panT{valid} = cur;
+        valid  = valid + 1;
+        %compute maximal translation in each axis
+        maxX = ceil(max(maxX, cur(1, 3))); maxY = ceil(max(maxY,cur(2, 3)));
+    end
+    prev = cur;
 end
 
-%2. :)
-panT = imgToPanoramaCoordinates(T);
-for l=1:size(panT,2)
-    maxX = ceil(max(maxX, panT{l}(1, 3))); maxY = ceil(max(maxY,panT{l}(2, 3)));
-end
-%3.:TODO
+%3.: Calculate slice centers width and panorama size
 
 halfSliceWidth = (size(images(:, :, :, 1), 2) / nViews) / 2;
-panoSize = size(images(:,:,:,1)) + [maxX maxY+ceil(halfSliceWidth)*2 0];%TODO: check!
+panoSize = size(images(:,:,:,1)) + [maxX maxY+ceil(halfSliceWidth)*2   0];
 sliceCenters = 1 + ones(1, size(images,4)) * halfSliceWidth +(0 : size(images,4)-1)*(halfSliceWidth*2);
 
+%4.: Produce the panorama frames
 frames = zeros([panoSize nViews]);
 OkFrames = 1;
 for k = 1:nViews
-%4.:
-[panoramaFrame,frameNotOK] = renderPanoramicFrame(panoSize, images, panT, ones(1, size(images,4))*sliceCenters(k),halfSliceWidth );
-%5.:REVISE
+[panoramaFrame,frameNotOK] = renderPanoramicFrame(panoSize, images,panT, ones(1, size(images,4))*sliceCenters(k),halfSliceWidth );
+
+%5.:MovieMaker
 if ~frameNotOK
     imshow(panoramaFrame);
     frames(: ,:, :, OkFrames) = panoramaFrame;
@@ -55,5 +56,5 @@ if ~frameNotOK
 end
 
 end
-stereoVid = immovie(frames(:,:,:, 1:OkFrames-1));
+stereoVid = immovie(frames(:, :, :, 1:OkFrames-1));
 end

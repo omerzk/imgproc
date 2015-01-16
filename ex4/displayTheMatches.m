@@ -12,7 +12,7 @@ function displayTheMatches(im1,im2,pos1,pos2,inlind)
 
 im = [im1,im2];
 pos2(:, 2) = pos2(:, 2) + size(im1, 2);
-imshow(im);
+figure;imshow(im);
 hold on
 j = 1;
 for i= 1 : size(pos1,1)

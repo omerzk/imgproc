@@ -29,8 +29,7 @@ function [T,inliers] = ransacTransform(pos1,pos2,numIters,inlierTol)%the F is mi
 s = 4; 
 [npts,~] = size(pos1);
 indices = (1:npts);
-best_inliers = 0;
-inliersThreshold = min(10, npts - 1);
+inliersThreshold = 7;
 T = nan;
 inliers = nan;
 for k = 1:numIters
@@ -45,10 +44,10 @@ for k = 1:numIters
     %Remove homogenous coordinate x = x'/w, y = y'/w
     res = (homRes(:,1:2) ./ repmat(homRes(:,3),[1,2]));
     %Check for inliers
-    %inliers =  # (?((x1 - x2)? + (y1 - y2)?) > inlierTol)
-    inlierCheck = ((sum((res - pos2).^2, 2)) < inlierTol)';%withdrew the sqrt at some point 
-    if sum(inlierCheck) > max(best_inliers, inliersThreshold)
-        best_inliers = sum(inlierCheck);
+    %using squared euclidian distance as a metric and a thershold
+    inlierCheck = ((sum((res - pos2).^2, 2)) < inlierTol)'; 
+    if sum(inlierCheck) > inliersThreshold
+        inliersThreshold = sum(inlierCheck);
         inliers = indices(inlierCheck);
       %DEBUG
 %         disp('=============================================');
@@ -57,13 +56,13 @@ for k = 1:numIters
 %         disp('=============================================');
         %UNKNOWN:why not save T = _H here ?...
         % T = H_;
-  else
-     H_;
+%   else
+%      H_;
     end
 end
+
 if isnan(inliers)
-    disp('no model found for given tolerence');
-    
+    disp('no model found for given tolerence'); 
 else
     %Revaluate H using the inlier set 
     sampleInd = randsample(inliers, s);

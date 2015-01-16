@@ -30,7 +30,7 @@ bounds = zeros(1,size(Tcenters, 1) + 1);
 bounds(1) = Tcenters(1,1) - halfSliceWidthX;
 bounds(1,2: end - 1) = round(((Tcenters(1: end - 1) + Tcenters(2 : end))/2)');
 bounds(end) = Tcenters(end,1) + halfSliceWidthX;
-%bounds = bounds - min(bounds) + 1;%????????????????????????????????????????
+%bounds = bounds - min(bounds) + 1;%????
 %==============================================
 for i = 1:size(imgs,4)
    left = bounds(i); right = bounds(i + 1);%readability counts
@@ -41,11 +41,16 @@ for i = 1:size(imgs,4)
    invIndices = zeros(size(X));
    invIndices(:, :, 1) = reshape(prod(1, :)./prod(3, :), size(X));
    invIndices(:, :, 2) = reshape(prod(2, :)./prod(3, :), size(X));
+   if sum(sum(invIndices(:, :, 2) < 0)) > 0 || sum(sum(invIndices(:, :, 2) > size(imgs(:,:,3, i), 2))) > 0 
+       frameNotOK = true;
+       break;
+   end
    clearvars prod indexVec
    %interpolate to find the value of the im in the subpixels we found
    %thus completing our backwarping.
    panoramaFrame(1:panoSize(1),left:right,1) = interp2(imgs(:,:,1, i),invIndices(:, :, 2), invIndices(:, :, 1),'bilinear');
    panoramaFrame(1:panoSize(1),left:right,2) = interp2(imgs(:,:,2, i),invIndices(:, :, 2), invIndices(:, :, 1),'bilinear');
    panoramaFrame(1:panoSize(1),left:right,3) = interp2(imgs(:,:,3, i),invIndices(:, :, 2), invIndices(:, :, 1),'bilinear');
+
 end
 %if panoramaFrame

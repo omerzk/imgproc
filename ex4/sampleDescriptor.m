@@ -13,9 +13,6 @@ k = 1 + 2 * descRad;
 G = fspecial('gaussian', [7 7], 2);
 [len, ~] = size(pos);
 desc = zeros(k, k, len);
-%fabricate the origin coordinates
-sz = size(im);
-[Y, X] = meshgrid(1:sz(2), 1:sz(1));%why reverse?2,1 y,x?
 %transfer feature coordinates to pyr{i + 2} domain 
 pos = ((pos - 1) * 0.25) + 1;
 %ataining the grad direction at every point of the image.
@@ -29,8 +26,9 @@ for l = 1: len
      y = pos(l, 2);
 
     indexVec = [pX(:) pY(:)]';
-    dirpatch = conv2(interp2(Y, X, dir,  pX  + x,pY + y), G, 'same');
-    lclOrient = dirpatch(4, 4);
+%     dirpatch = conv2(interp2(dir,pX+ x,pY + y), G, 'same');
+%     lclOrient = dirpatch(4, 4);
+    lclOrient = interp2(dir,   x,y);
     %Fabricate the opposite rotation matrix as to normalize the orientation to 0; 
     cosTheta = cos(lclOrient); sinTheta = sin(lclOrient);
     rotMat = [cosTheta -sinTheta; sinTheta cosTheta];
@@ -44,7 +42,7 @@ for l = 1: len
     %patch = interp2(Y, X, im, rotIndices(:,:,2) + y, rotIndices(:,:,1) + x,'cubic');
     %imshow(patch);
     %without rotation for DEBUGGING.
-    patch = interp2(Y, X, im, pY + y, pX + x,'cubic');
+    patch = interp2(im, pX + x, pY + y,'cubic');
     desc(:, :, l) = (patch - mean(patch(:)))/norm(patch - mean(patch(:)));
 end
 end

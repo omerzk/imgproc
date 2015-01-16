@@ -10,7 +10,6 @@ function desc = sampleDescriptor(im,pos,descRad)
 
 %init 
 k = 1 + 2 * descRad;
-%G = fspecial('gaussian', [7 7], 2);
 [len, ~] = size(pos);
 desc = zeros(k, k, len);
 %transfer feature coordinates to pyr{i + 2} domain 
