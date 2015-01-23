@@ -1,0 +1,112 @@
+omerzaks
+
+========================
+R2014a linux Gnome 3
+========================
+
+========================
+Exercise Description
+========================
+in this exercise we wrote  functions that:
+- Register images using feature point registration , 
+  the process was implemented using a simplified mops algorithm and a simplified Ransac algorithm.
+- I also implemented the bonus Barcode blending assignment (in the blend folder)
+- I implemented the rotation bonus, though I haven't got it to function in a perfect manner:)(rot folder)
+- in addition I've made my mops scale-invariant through the sampling feature points in all pyramid levels.
+- I would ask that you consider granting me part of the bonus for the rotation on account of scale invariance
+- I would also like to ask for some kind of bonus for cutting the runtime of the algorithm
+  by a awesome factor.
+
+========================
+Prologue
+========================
+
+  - Match scoring method
+    I went with a wholly straight forward approach -  taking the maximal dot product pair.
+    where i sequentially looped over the first descriptor vector and took the dot product of 
+    each 7X7 patch spread into a 49X1 vector with a matrix of the second descriptor vector reshaped into
+    a 49Xm vector of descriptor vectors where m is the length of the original second descriptor vector
+    notice i used an implicit heuristic assuming the first match i found for a vector j of the second vector 
+    of descriptors is the correct match for it - this heuristic was a empiric conclusion.
+    it of course results in a decreased run-time as compared to computing the maximal match for each vector in both descriptors thus implementing a solution to the asymmetrical problem while my solution assumes a masure of symmetry.
+
+  - Multi-scale patches
+    I made my feature detection and sampling scale invariant through the use of multilevel sampling in a Gaussian pyramid, as such i in fact made the entire process scale invariant apart from the getModel function which doesn't try and compute scale. (trivial to add) 
+  - Oriented patches
+    my descriptor is variant to rotation but my getmodel function computes rotation quite well.
+
+  - Parallel Computing
+    The most intense computation of the program(registering each sequential photo pair) is implemented using 
+    parallel computation dividing the workload to multiple "workers" as such reducing the run time drastically. 
+   
+
+========================
+Files Submitted
+========================
+basic/
+  loadImages.m - Loading images into an 4-d array.
+  imgToPanoramaCoordinates.m - Changes transformations to transform image coordinates to panorama coordinates.
+  createStereoVideo.m - creates stereo movie, through the process of  
+  renderPanoramicFrame.m - renders single panoramic frame
+  register.m - activates and manages the transactions between the following functions and ultimatly produces the
+                translation between the given images through feature point methods.
+  findFeatures.m - detects feature points at the bottom level of a Gaussian pyramid and samples them using the 
+                sampleDescriptor function
+  spreadOutCorners.m - the algorithm given to us that implements a twist on the Harris Corner Detector.
+  sampleDescriptor.m - samples a descriptor for every feature point received, returning a vector of 7X7   
+                intensity descriptor patches sampled from the i+2 pyramid level. 
+  myMatchFeatures.m - Uses the dot product of patch pairs to the determine an optimal pairing of the descriptors
+                from desc1 to desc2.  
+  ransacTransform.m - implements the random sample consensus algorithm that uses a set of proposed matches
+                between image feature pairs which it uses to find a transformation between the images 
+                which most pairs agree upon.
+  getModel.m - takes a two vectors of 2D points and computes the average translation = the one they agree the 
+               upon most.
+  randSample.m - external code that produces random numbers in a specified range. the program runs just as well 
+                without it(on the university computers, not on my laptop)  
+  GaussianPyramid.m - the Gaussian pyramid function implemented in the previous exercise
+  displayTheMatches.m - displays the matches divided to inliers and outliers using the outputs of the 
+                myMatchFeatures and Ransac functions.
+  blend/
+    same as above and
+      rgbBlend.m
+      LaplacianToImage.m
+      LaplacianPyramid.m
+      expand.m
+      changes:
+      createStereoVideo.m - in calculating the panoSize parameter and storing the render results.
+      renderPanoramicFrame.m - perform bar-code pyramid blending.
+  rot/
+    same as basic and
+    changes:
+      findFeatures.m - Now contains the multi-scale implementation
+      sampleDescriptor.m - Contains an implementation for oriented patch sampling.
+      getModel.m - Solves for translation + rotation;
+  
+========================
+Epilogue
+========================
+  Note that the runtime  of my program is <= half of the runtime of the Ransac implementations in this course
+  the reason I'm so sure of this is that it halves the runtime of the school algorithm which every implementation used which accounts for a major part of the programs runtime.
+
+  drawbacks:
+
+  Extra memory usage -- creating a shifted copy of the image vector thus making a memory sacrifice in-order to save in data transference costs allowing for the  the parallel computing for loop 
+  to send only the specific entries of the image-vectors to it's workers instead of the whole image vector.
+
+  Extra computations -- a sacrifice was made where the computation in each iteration was made independent from previous computations thus in-fact performing the intensive computation 2n-2 times instead of n times.
+  where n = number of pictures.
+  this would seem detrimental to our cause but since the workload on a modern computer is divided between around 4~ workers we actually see an improvement in runtime. 
+
+  the actual improvement is achieved by dividing the iterations of the for loop arbitrarily between the Matlab worker objects which perform
+  them concurrently.
+
+  the improvement is environment dependent - tested successfully on university computers, would seem reasonable that it's run well on any desktop.(sufficient memory(important) + processing power)
+
+  please consider a bonus!:)
+
+
+
+                   
+
+      

@@ -4,7 +4,7 @@ function moin(pyr1,pyr2)
 [ind1,ind2] = myMatchFeatures(desc1,desc2, 0.7);
 matched1 = pos1(ind1, :);
 matched2 = pos2(ind2, :);
-[~, inliers] = ransacTransform(matched1, matched2, 700,9);
+[~, inliers] = ransacTransform(matched1, matched2, 1000, 8);
 displayTheMatches(pyr1{1}, pyr2{1}, matched1,matched2, inliers);
 [matched1 matched2];
 matchdesc1 = desc1(:,:,ind1);
