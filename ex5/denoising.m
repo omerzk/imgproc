@@ -15,11 +15,12 @@ function denoisedDecomp = denoise(decomp,levels)
     [LL, LH, HL, HH] = parseWaveletDecomp(decomp);
     LL = denoise(LL, levels - 1);
     %Threshold
-%     thresh = @(x)max(x(:))/2;
-    thresh = @(x)4.5 * std2(x);
-    LH(LH < thresh(LH)) = 0;
-    HL(HL < thresh(HL)) = 0;
-    HH(HH < thresh(HH)) = 0;
+   %thresh = @(x)max(x(:))/2.2;
+    %thresh = @(x)4.5 * std2(x);
+    thresh = @(x)2 * std2(x);
+    LH(abs(LH) < thresh(LH)) = 0;
+    HL(abs(HL) < thresh(HL)) = 0;
+    HH(abs(HH) < thresh(HH)) = 0;
     denoisedDecomp = [LL LH; HL HH];
     end
 end
